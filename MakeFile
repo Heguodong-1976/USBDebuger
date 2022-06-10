@@ -1,0 +1,16 @@
+CC=cl.exe
+LINK=link.exe
+LIB_DIR=MSVC\X64\dll
+
+Main:Main.obj
+	copy /Y ${LIB_DIR}\*.dll Out
+	$(LINK) /LIBPATH:${LIB_DIR} /OUT:Out/Main.exe main.obj libusb-1.0.lib
+	@echo Success!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	
+Main.obj:Source/main.cpp  Source/struct.h
+	$(CC) -c /std:c++17 /Zc:__cplusplus /EHsc /Fo:Main.obj  Source/main.cpp	
+	
+CLEAN:
+	del Main.obj
+	del Out\Main.exe
+	del Out\*.dll
