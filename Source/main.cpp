@@ -3,7 +3,7 @@
 #include "struct.h"
 using namespace std;
 using namespace Kiyun;
-Error* print_devs(libusb_device **devs);
+Error* print_devs(libusb_device **devs,ostream& s);
 int main(void)
 {	
 	auto ret = libusb_init(NULL);
@@ -17,7 +17,7 @@ int main(void)
 		return (int) cnt;
 	}
 	
-	auto error=print_devs(devs);
+	auto error=print_devs(devs,cout);
 	if(error!=NULL)
 	{
 		delete error;
@@ -30,7 +30,7 @@ int main(void)
 	cout<<"Hello World!"<<endl;
 	
 }
-static Error* print_devs(libusb_device **devs)
+static Error* print_devs(libusb_device **devs,ostream& s)
 {
 	libusb_device *dev;
 	int i = 0;
@@ -39,7 +39,7 @@ static Error* print_devs(libusb_device **devs)
 		auto ret = libusb_get_device_descriptor(dev, &desc);
 		if (ret < 0) {
 			cerr<<"Failed libusb_get_device_descriptor(...)"<<endl;
-			return new Error{"Failed libusb_get_device_descriptor(...)",ret,__FILE__,__LINE__};
+			//return new Error{"Failed libusb_get_device_descriptor(...)",ret,__FILE__,__LINE__};
 		}
 		
 		cout<<dec<<i<<"  Vendor:"<<hex<<desc.idVendor<<"\tProduct:"<<desc.idProduct;
