@@ -53,7 +53,6 @@ static Error* print_devs(libusb_device **devs,ostream& s)
 		for (int j = 0; j < ret; j++)
 			s<<"."<<(int)path[j];
 		s<<"\t";		
-		
 		libusb_device_handle *dev_handle=NULL;
 		ret=libusb_open(dev,&dev_handle);
 		if(ret==libusb_error::LIBUSB_ERROR_NOT_SUPPORTED)
@@ -63,11 +62,12 @@ static Error* print_devs(libusb_device **devs,ostream& s)
 		}
 		
 		unsigned char product[255]={0};
-		unsigned char serialNumber[255];
-		unsigned char manufacturer[255];
-		ret=libusb_get_string_descriptor_ascii(dev_handle,desc.iProduct,product,255);
-		ret=libusb_get_string_descriptor_ascii(dev_handle,desc.iSerialNumber,serialNumber,255);
-		ret=libusb_get_string_descriptor_ascii(dev_handle,desc.iManufacturer,manufacturer,255);
+		unsigned char serialNumber[255]={0};
+		unsigned char manufacturer[255]={0};
+		//ret=libusb_get_string_descriptor_ascii(dev_handle,desc.iProduct,product,255);	
+		//ret=libusb_get_string_descriptor_ascii(dev_handle,desc.iSerialNumber,serialNumber,255);
+		//ret=libusb_get_string_descriptor_ascii(dev_handle,desc.iManufacturer,manufacturer,255);
+		//		continue;	
 		libusb_close(dev_handle);
 		s<<"\tSuccess:"<<serialNumber<<":"<<product<<":"<<manufacturer;
 
