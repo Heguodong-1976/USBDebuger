@@ -49,10 +49,10 @@ static Error* print_devs(libusb_device **devs,ostream& s)
 		
 		uint8_t path[8]; 
 		ret = libusb_get_port_numbers(dev, path, sizeof(path));
-		s<<"\tPath:";
+		s<<"\tPath : ";
 		for (int j = 0; j < ret; j++)
-			s<<"."<<(int)path[j];
-		s<<"\t";		
+			s<<dec<<"."<<(int)path[j];
+		
 		libusb_device_handle *dev_handle=NULL;
 		ret=libusb_open(dev,&dev_handle);
 		if(ret==libusb_error::LIBUSB_ERROR_NOT_SUPPORTED)
