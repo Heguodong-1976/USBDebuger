@@ -41,7 +41,7 @@ static void print_endpoint(const libusb_endpoint_descriptor* descs,int index,ost
 	s<<"\t\t\t\tIndex:\t........."<<index<<"........."<<endl;
 	s<<"\t\t\t\tDescriptorType:\t"<<libusb_descriptor_type_to_string(desc.bDescriptorType)<<endl;
 	s<<"\t\t\t\tEndpointAddress:\t"<<endpointAddress_to_string(desc.bEndpointAddress)<<endl;
-	s<<"\t\t\t\tAttributes:\t"<<(int)desc.bmAttributes<<endl;
+	s<<"\t\t\t\tAttributes:\t"<<attributes_to_string(desc.bmAttributes)<<endl;
 	s<<"\t\t\t\tMaxPacketSize:\t"<<(int)desc.wMaxPacketSize<<endl;
 	s<<"\t\t\t\tInterval:\t"<<(int)desc.bInterval<<endl;
 	s<<"\t\t\t\tRefresh:\t"<<(int)desc.bRefresh<<endl;
@@ -58,14 +58,14 @@ static void print_altsetting(const libusb_interface_descriptor* descs,int index,
 	s<<"\t\t\tSubClass:\t"<<(int)desc.bInterfaceSubClass<<endl;
 	s<<"\t\t\tInterfaceProtocol:\t"<<(int)desc.bInterfaceProtocol<<endl;
 	s<<"\t\t\tInterfaceIndex:\t"<<(int)desc.iInterface<<endl;
-	s<<"\t\t\tNumber of Endpoints:\t"<<(int)desc.bNumEndpoints<<endl;
+	s<<"\t\t\tCount of Endpoints:\t"<<(int)desc.bNumEndpoints<<endl;
 	for(int i=0;i<desc.bNumEndpoints;++i)print_endpoint(desc.endpoint,i,s);
 }
 static void print_Interface(const libusb_interface* interfaces,int index,ostream& s)
 {
 	auto interface=interfaces[index];
 	s<<"\t\tIndex:\t........."<<index<<"........."<<endl;
-	s<<"\t\tNumber Of Alt Setting:\t"<<interface.num_altsetting<<endl;
+	s<<"\t\tCount of Alt Setting:\t"<<interface.num_altsetting<<endl;
 	for(int i=0;i<interface.num_altsetting;++i)print_altsetting(interface.altsetting,i,s);
 }
 static void print_configuration(libusb_device * dev,int index,ostream& s)
@@ -86,7 +86,7 @@ static void print_configuration(libusb_device * dev,int index,ostream& s)
 	s<<"\tAttributes:\t"<<(int)config->bmAttributes<<endl;
 	s<<"\tMaxPower:\t"<<(int)config->MaxPower<<endl;
 
-	s<<"\tNumber of Interfaces:\t"<<(int)config->bNumInterfaces<<endl;
+	s<<"\tCount of Interfaces:\t"<<(int)config->bNumInterfaces<<endl;
 	for(int i=0;i<config->bNumInterfaces;++i)print_Interface(config->interface,i,s);
 	
 	libusb_free_config_descriptor(config);
@@ -141,7 +141,7 @@ static void print_dev(libusb_device * dev,ostream& s)
 	s<<"MaxPacketSize0:\t"<<(int)desc.bMaxPacketSize0<<endl;
 	s<<"BCDDevice:\t"<<(int)desc.bcdDevice<<endl;
 	print_dev_inf(dev,s);
-	s<<"Number of Configurations:"<<(int)desc.bNumConfigurations<<endl;
+	s<<"Count of Configurations:"<<(int)desc.bNumConfigurations<<endl;
 	for(auto i = 0; i < desc.bNumConfigurations; i++) print_configuration(dev,i,s);
 }
 static void print_devs(libusb_device **devs,ostream& s)

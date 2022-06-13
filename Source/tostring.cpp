@@ -3,19 +3,19 @@
 using namespace std;
 string libusb_descriptor_type_to_string(uint8_t type)
 {
-	if(type== 0x01)return "LIBUSB_DT_DEVICE";
-	if(type== 0x02)return "LIBUSB_DT_CONFIG";
-	if(type== 0x03)return "LIBUSB_DT_STRING";
-	if(type== 0x04)return "LIBUSB_DT_INTERFACE";
-	if(type== 0x05)return "LIBUSB_DT_ENDPOINT";
-	if(type== 0x0f)return "LIBUSB_DT_BOS";
-	if(type== 0x10)return "LIBUSB_DT_DEVICE_CAPABILITY";
-	if(type== 0x21)return "LIBUSB_DT_HID";
-	if(type== 0x22)return "LIBUSB_DT_REPORT";
-	if(type== 0x23)return "LIBUSB_DT_PHYSICAL";
-	if(type== 0x29)return "LIBUSB_DT_HUB";
-	if(type== 0x2a)return "LIBUSB_DT_SUPERSPEED_HUB";
-	if(type== 0x30)return "LIBUSB_DT_SS_ENDPOINT_COMPANION";
+	if(type== 0x01)return "DEVICE";
+	if(type== 0x02)return "CONFIG";
+	if(type== 0x03)return "STRING";
+	if(type== 0x04)return "INTERFACE";
+	if(type== 0x05)return "ENDPOINT";
+	if(type== 0x0f)return "BOS";
+	if(type== 0x10)return "DEVICE_CAPABILITY";
+	if(type== 0x21)return "HID";
+	if(type== 0x22)return "REPORT";
+	if(type== 0x23)return "PHYSICAL";
+	if(type== 0x29)return "HUB";
+	if(type== 0x2a)return "SUPERSPEED_HUB";
+	if(type== 0x30)return "SS_ENDPOINT_COMPANION";
 	return NULL;
 }
 string speed_to_string(int speed)
@@ -35,26 +35,26 @@ string bcdUSB_to_string(int usb)
 }
 string libusb_class_code_to_string(int deviceclass)
 {
-	if(deviceclass==0x00)return "LIBUSB_CLASS_PER_INTERFACE";
-	if(deviceclass==0x01)return "LIBUSB_CLASS_AUDIO";
-	if(deviceclass==0x02)return "LIBUSB_CLASS_COMM";
-	if(deviceclass==0x03)return "LIBUSB_CLASS_HID";
-	if(deviceclass==0x05)return "LIBUSB_CLASS_PHYSICAL";
-	if(deviceclass==0x06)return "LIBUSB_CLASS_IMAGE";
-	if(deviceclass==0x06)return "LIBUSB_CLASS_PTP";
-	if(deviceclass==0x07)return "LIBUSB_CLASS_PRINTER";
-	if(deviceclass==0x08)return "LIBUSB_CLASS_MASS_STORAGE";
-	if(deviceclass==0x09)return "LIBUSB_CLASS_HUB";
-	if(deviceclass==0x0a)return "LIBUSB_CLASS_DATA";
-	if(deviceclass==0x0b)return "LIBUSB_CLASS_SMART_CARD";
-	if(deviceclass==0x0d)return "LIBUSB_CLASS_CONTENT_SECURITY";
-	if(deviceclass==0x0e)return "LIBUSB_CLASS_VIDEO";
-	if(deviceclass==0x0f)return "LIBUSB_CLASS_PERSONAL_HEALTHCARE";
-	if(deviceclass==0xdc)return "LIBUSB_CLASS_DIAGNOSTIC_DEVICE";
-	if(deviceclass==0xe0)return "LIBUSB_CLASS_WIRELESS";
-	if(deviceclass==0xef)return "LIBUSB_CLASS_MISCELLANEOUS";
-	if(deviceclass==0xfe)return "LIBUSB_CLASS_APPLICATION";
-	if(deviceclass==0xff)return "LIBUSB_CLASS_VENDOR_SPEC";
+	if(deviceclass==0x00)return "PER_INTERFACE";
+	if(deviceclass==0x01)return "AUDIO";
+	if(deviceclass==0x02)return "COMM";
+	if(deviceclass==0x03)return "HID";
+	if(deviceclass==0x05)return "PHYSICAL";
+	if(deviceclass==0x06)return "IMAGE";
+	if(deviceclass==0x06)return "PTP";
+	if(deviceclass==0x07)return "PRINTER";
+	if(deviceclass==0x08)return "MASS_STORAGE";
+	if(deviceclass==0x09)return "HUB";
+	if(deviceclass==0x0a)return "DATA";
+	if(deviceclass==0x0b)return "SMART_CARD";
+	if(deviceclass==0x0d)return "CONTENT_SECURITY";
+	if(deviceclass==0x0e)return "VIDEO";
+	if(deviceclass==0x0f)return "PERSONAL_HEALTHCARE";
+	if(deviceclass==0xdc)return "DIAGNOSTIC_DEVICE";
+	if(deviceclass==0xe0)return "WIRELESS";
+	if(deviceclass==0xef)return "MISCELLANEOUS";
+	if(deviceclass==0xfe)return "APPLICATION";
+	if(deviceclass==0xff)return "VENDOR_SPEC";
 	return "Unknown";
 }
 string endpointAddress_to_string(int bEndpointAddress)
@@ -65,3 +65,39 @@ string endpointAddress_to_string(int bEndpointAddress)
 	sprintf(t,"Number=%d Direction=%s",number,dir==0?"Out":"IN");
 	return t;
 }
+string transfer_type_to_string(int type)
+{
+	if(type==0X00)return "CONTROL";
+	if(type==0X01)return "ISOCHRONOUS";
+	if(type==0X02)return "BULK";
+	if(type==0X03)return "INTERRUPT";
+	return "Unknown";	
+}
+string iso_sync_type_to_string_to_string(int type)
+{
+	if(type==0X00)return "NONE";
+	if(type==0X01)return "ASYNC";
+	if(type==0X02)return "ADAPTIVE";
+	if(type==0X03)return "SYNC";
+	return "Unknown";	
+}
+string iso_usage_type_to_string_to_string_to_string(int type)
+{
+	if(type==0X00)return "DATA";
+	if(type==0X01)return "FEEDBACK";
+	if(type==0X02)return "IMPLICIT";
+	return "Unknown";	
+}
+string attributes_to_string(int bmAttributes)
+{
+	int transferType= bmAttributes&0B11;
+	int iso_sync_type=bmAttributes&0B1100;
+	int iso_usage_type=bmAttributes&0B110000;
+	char t[255];
+	sprintf(t,"TransferType=%s SyncType=%s SyncUsageType=%s",
+				transfer_type_to_string(transferType).c_str(),
+				iso_sync_type_to_string_to_string(iso_sync_type).c_str(),
+				iso_usage_type_to_string_to_string_to_string(iso_usage_type).c_str());
+	return t;
+}
+

@@ -7,4 +7,8 @@ string speed_to_string(int speed);
 string bcdUSB_to_string(int usb);
 string libusb_class_code_to_string(int deviceclass);
 string endpointAddress_to_string(int bEndpointAddress);
+string attributes_to_string(int bmAttributes);
+string transfer_type_to_string(int type);
+string iso_sync_type_to_string(int type);
+string iso_usage_type_to_string(int type);
 #endif
