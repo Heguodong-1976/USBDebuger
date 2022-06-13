@@ -39,7 +39,8 @@ static void print_endpoint(const libusb_endpoint_descriptor* descs,int index,ost
 {
 	auto desc=descs[index];
 	s<<"\t\t\t\tIndex:\t........."<<index<<"........."<<endl;
-	s<<"\t\t\t\tEndpointAddress:\t"<<(int)desc.bEndpointAddress<<endl;
+	s<<"\t\t\t\tDescriptorType:\t"<<libusb_descriptor_type_to_string(desc.bDescriptorType)<<endl;
+	s<<"\t\t\t\tEndpointAddress:\t"<<endpointAddress_to_string(desc.bEndpointAddress)<<endl;
 	s<<"\t\t\t\tAttributes:\t"<<(int)desc.bmAttributes<<endl;
 	s<<"\t\t\t\tMaxPacketSize:\t"<<(int)desc.wMaxPacketSize<<endl;
 	s<<"\t\t\t\tInterval:\t"<<(int)desc.bInterval<<endl;
