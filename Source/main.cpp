@@ -14,13 +14,14 @@ int main(void)
 		uninit();
 		return (int) cnt;
 	}
-	
+
+PRINT_DEVICES:	
 	char * buffer=NULL;
 	devices_to_ascii(devs,&buffer);
 	cout<<buffer<<endl;
 	delete[] buffer;
 	
-	wcout<<"Please input opening device index:";
+	cout<<"Please input opening device index:";
 	int index=-1;
 	cin>>index;
 	
@@ -29,6 +30,17 @@ int main(void)
 	cout<<buffer<<endl;
 	delete[] buffer;
 	cout<<"###############################################"<<endl;
+	
+	cout<<"################Selected Operations################"<<endl;
+	cout<<"1: Debug"<<endl;
+	cout<<"9: Back"<<endl;
+	cout<<"0: Exit"<<endl;
+	while(true)
+	{	
+		cin>>index;
+		if(index==9)goto PRINT_DEVICES;
+		if(index==0)break;		
+	}
 
 	free_devices(devs);
 	uninit();

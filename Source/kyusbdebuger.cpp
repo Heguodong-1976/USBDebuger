@@ -20,7 +20,7 @@ extern "C" void free_devices(void ** devices)
 }
 extern "C" void devices_to_ascii(void **devices,char** buffer)
 {
-	stringstream ss;
+	ostringstream ss;
 	print_devs((libusb_device **)devices,ss);
 	string str=ss.str();
 	int len=str.size();
@@ -29,7 +29,7 @@ extern "C" void devices_to_ascii(void **devices,char** buffer)
 }
 extern "C" void device_to_ascii(void ** devices,int index,char** buffer)
 {
-	stringstream ss;
+	ostringstream ss;
 	print_dev((libusb_device **)devices,index,ss);
 	string str=ss.str();
 	int len=str.size();
