@@ -85,18 +85,6 @@ extern "C" int get_interfaces(void ** devs,int index,int ** interface_numbers,in
 			{
 				auto interface_descriptor=interface.altsetting[altsetting_index];
 				arr.push_back(interface_descriptor.bInterfaceNumber);				
-				//cout<<"\t\t\tCount of Endpoints:\t"<<(int)interface_descriptor.bNumEndpoints<<endl;
-				//for(int endpoint_index=0;endpoint_index<interface_descriptor.bNumEndpoints;++endpoint_index)
-				//{
-				//	auto endpoint_descriptor=interface_descriptor.endpoint[endpoint_index];
-				//	cout<<"\t\t\t\tDescriptorType:\t"<<libusb_descriptor_type_to_string(endpoint_descriptor.bDescriptorType)<<endl;
-				//	cout<<"\t\t\t\tEndpointAddress:\t"<<endpointAddress_to_string(endpoint_descriptor.bEndpointAddress)<<endl;
-				//	cout<<"\t\t\t\tAttributes:\t"<<attributes_to_string(endpoint_descriptor.bmAttributes)<<endl;
-				//	cout<<"\t\t\t\tMaxPacketSize:\t"<<(int)endpoint_descriptor.wMaxPacketSize<<endl;
-				//	cout<<"\t\t\t\tInterval:\t"<<(int)endpoint_descriptor.bInterval<<endl;
-				//	cout<<"\t\t\t\tRefresh:\t"<<(int)endpoint_descriptor.bRefresh<<endl;
-				//	cout<<"\t\t\t\tSynchAddress:\t"<<(int)endpoint_descriptor.bSynchAddress<<endl;
-				//}
 			}
 		}		
 		libusb_free_config_descriptor(config);
@@ -104,5 +92,45 @@ extern "C" int get_interfaces(void ** devs,int index,int ** interface_numbers,in
 	*count=arr.size();
 	* interface_numbers=new int[*count];
 	for(int i=0;i<*count;++i)(* interface_numbers)[i]=arr[i];
+	return 0;
+}
+extern "C" int get_endpoints(void ** devs,int index,int interface_number,int ** endpoints,int *count)
+{
+	libusb_device * dev=(libusb_device *)(devs[index]);
+	struct libusb_device_descriptor desc;
+	auto ret = libusb_get_device_descriptor(dev, &desc);
+	vector<int> arr;
+	for(auto config_index = 0; config_index < desc.bNumConfigurations; config_index++)
+	{
+		libusb_config_descriptor *config=NULL;
+		auto ret = libusb_get_config_descriptor(dev, config_index, &config);
+		for(int interface_index=0;interface_index<config->bNumInterfaces;++interface_index)
+		{
+			auto interface=config->interface[interface_index];
+			for(int altsetting_index=0;altsetting_index<interface.num_altsetting;++altsetting_index)
+			{
+				auto interface_descriptor=interface.altsetting[altsetting_index];
+				if(interface_number!=interface_descriptor.bInterfaceNumber)continue;
+				for(int endpoint_index=0;endpoint_index<interface_descriptor.bNumEndpoints;++endpoint_index)
+				{
+					auto endpoint_descriptor=interface_descriptor.endpoint[endpoint_index];
+					//cout<<"\t\t\t\tDescriptorType:\t"<<libusb_descriptor_type_to_string(endpoint_descriptor.bDescriptorType)<<endl;
+					//cout<<"\t\t\t\tEndpointAddress:\t"<<endpointAddress_to_string(endpoint_descriptor.bEndpointAddress)<<endl;
+					//cout<<"\t\t\t\tAttributes:\t"<<attributes_to_string(endpoint_descriptor.bmAttributes)<<endl;
+					//cout<<"\t\t\t\tMaxPacketSize:\t"<<(int)endpoint_descriptor.wMaxPacketSize<<endl;
+					//cout<<"\t\t\t\tInterval:\t"<<(int)endpoint_descriptor.bInterval<<endl;
+					//cout<<"\t\t\t\tRefresh:\t"<<(int)endpoint_descriptor.bRefresh<<endl;
+					//cout<<"\t\t\t\tSynchAddress:\t"<<(int)endpoint_descriptor.bSynchAddress<<endl;
+					arr.push_back(0b1111&endpoint_descriptor.bEndpointAddress);
+				
+				}
+			}
+		}		
+		libusb_free_config_descriptor(config);
+	}
+	*count=arr.size();
+	* endpoints=new int[*count];
+	for(int i=0;i<*count;++i)(* endpoints)[i]=arr[i];
+	return 0;
 	return 0;
 }

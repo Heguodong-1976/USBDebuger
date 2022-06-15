@@ -3,7 +3,7 @@
 using namespace std;
 void debugit(void ** devs,int index);
 int main(void)
-{	
+{		
 	void *context=NULL;
 	auto ret = init(&context);
 	if (ret < 0)
@@ -16,7 +16,8 @@ int main(void)
 		return (int) cnt;
 	}
 
-PRINT_DEVICES:		
+PRINT_DEVICES:	
+	system("cls");	
 	char * buffer=NULL;
 	devices_to_ascii(devs,&buffer);
 	cout<<buffer<<endl;
@@ -33,8 +34,8 @@ PRINT_DEVICES:
 	cout<<"###############################################"<<endl;
 	
 	cout<<"################Selected Operations################"<<endl;
-	cout<<"1: Debug"<<endl;
-	cout<<"9: Back"<<endl;
+	cout<<"1: Start Debug"<<endl;
+	cout<<"9: Go to parent menu"<<endl;
 	cout<<"0: Exit"<<endl;
 	while(true)
 	{	
@@ -66,21 +67,22 @@ void debugit(void ** devs,int dev_index)
 	cin>>interface_number;
 	
 	ret = open_device(devs,dev_index,interface_number,&dev_handle);	
-	if(ret < 0)
-	{
-		cout<<"Failed libusb_open(...)=="<<ret<<endl;
-		return;
-	}
+	cout<<"open_device(...)=="<<ret<<endl;
+	if(ret < 0)return;
 	
 	ret= claim_interface(dev_handle,interface_number);
 	cout<<"claim_interface=="<<ret<<endl;
 	if(ret<0)goto EXIT_debugit;
 	
-	//int *endpoints=nullptr;
-	//count=-1;
-	//ret= get_endpoints(devs,dev_index,interface_number,&endpoints,&count);
-	//int endpoint_number=0;
-	
+	int *endpoints=nullptr;
+	count=-1;
+	ret= get_endpoints(devs,dev_index,interface_number,&endpoints,&count);
+	int endpoint_number=0;
+	cout<<"Please select an endpoint in (";
+	for(int i=0;i<count;++i)cout<<endpoints[i]<<",";
+	cout<<"):"<<endl;
+	delete endpoints;
+	cin>>endpoint_number;
 	
 	
 	ret= release_interface(dev_handle,interface_number);

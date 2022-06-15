@@ -13,5 +13,6 @@ extern "C" int claim_interface(void * handle,int interface_number);
 extern "C" int release_interface(void * handle,int interface_number);
 
 extern "C" int get_interfaces(void ** devs,int index,int ** interface_numbers,int *count);
+extern "C" int get_endpoints(void ** devs,int index,int interface_number,int ** endpoints,int *count);
 
 #endif
