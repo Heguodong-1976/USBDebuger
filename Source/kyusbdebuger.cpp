@@ -2,7 +2,7 @@
 #include<sstream>
 #include "Include/libusb.h"
 #include "tostring.h"
-#include <list>
+#include <vector>
 using namespace std;
 extern "C" int init(void **context)
 {
@@ -68,23 +68,41 @@ extern "C" int release_interface(void * handle,int interface_number)
 	return libusb_release_interface((libusb_device_handle *)handle, interface_number);
 }
 
-extern "C" int get_interfaces(void ** devs,int index,int ** interfaces,int *count)
-{
+extern "C" int get_interfaces(void ** devs,int index,int ** interface_numbers,int *count)
+{	
+	libusb_device * dev=(libusb_device *)(devs[index]);
 	struct libusb_device_descriptor desc;
-	auto ret = libusb_get_device_descriptor(((libusb_device**)devs)[index], &desc);
-	list<int> lst;
-	//libusb_config_descriptor *config=NULL;
-	//auto ret = libusb_get_config_descriptor(((libusb_device**)devs), index, &config);
-	//if (ret<0) return 40000+ret;
-	//*count=config->bNumInterfaces;
-	//*interfaces=new int[*count];
-	//for(int i=0;i<config->bNumInterfaces;++i)
-	//{
-	//	auto interface=config->interface[i];
-	//	for(int j=0;j<interface.num_altsetting;++j)
-	//	{
-	//		auto desc=descs[j];
-	//	}
-	//}
+	auto ret = libusb_get_device_descriptor(dev, &desc);
+	vector<int> arr;
+	for(auto config_index = 0; config_index < desc.bNumConfigurations; config_index++)
+	{
+		libusb_config_descriptor *config=NULL;
+		auto ret = libusb_get_config_descriptor(dev, config_index, &config);
+		for(int interface_index=0;interface_index<config->bNumInterfaces;++interface_index)
+		{
+			auto interface=config->interface[interface_index];
+			for(int altsetting_index=0;altsetting_index<interface.num_altsetting;++altsetting_index)
+			{
+				auto interface_descriptor=interface.altsetting[altsetting_index];
+				arr.push_back(interface_descriptor.bInterfaceNumber);				
+				//cout<<"\t\t\tCount of Endpoints:\t"<<(int)interface_descriptor.bNumEndpoints<<endl;
+				//for(int endpoint_index=0;endpoint_index<interface_descriptor.bNumEndpoints;++endpoint_index)
+				//{
+				//	auto endpoint_descriptor=interface_descriptor.endpoint[endpoint_index];
+				//	cout<<"\t\t\t\tDescriptorType:\t"<<libusb_descriptor_type_to_string(endpoint_descriptor.bDescriptorType)<<endl;
+				//	cout<<"\t\t\t\tEndpointAddress:\t"<<endpointAddress_to_string(endpoint_descriptor.bEndpointAddress)<<endl;
+				//	cout<<"\t\t\t\tAttributes:\t"<<attributes_to_string(endpoint_descriptor.bmAttributes)<<endl;
+				//	cout<<"\t\t\t\tMaxPacketSize:\t"<<(int)endpoint_descriptor.wMaxPacketSize<<endl;
+				//	cout<<"\t\t\t\tInterval:\t"<<(int)endpoint_descriptor.bInterval<<endl;
+				//	cout<<"\t\t\t\tRefresh:\t"<<(int)endpoint_descriptor.bRefresh<<endl;
+				//	cout<<"\t\t\t\tSynchAddress:\t"<<(int)endpoint_descriptor.bSynchAddress<<endl;
+				//}
+			}
+		}		
+		libusb_free_config_descriptor(config);
+	}
+	*count=arr.size();
+	* interface_numbers=new int[*count];
+	for(int i=0;i<*count;++i)(* interface_numbers)[i]=arr[i];
 	return 0;
 }

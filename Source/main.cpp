@@ -57,18 +57,13 @@ void debugit(void ** devs,int dev_index)
 	int *interfaces=nullptr;
 	int count=-1;
 	auto ret= get_interfaces(devs,dev_index,&interfaces,&count);
-	if(ret < 0)
-	{
-		cout<<"get_interfaces(...)=="<<ret<<endl;
-		return;
-	}
 	
 	int interface_number=0;
 	cout<<"Please select an interface in (";
-	for(int i=0;i<count;++i)cout<<interfaces[i]<<" ";
-	cout<<"):"<<endl;	
+	for(int i=0;i<count;++i)cout<<interfaces[i]<<",";
+	cout<<"):"<<endl;
+	delete interfaces;
 	cin>>interface_number;
-	
 	
 	ret = open_device(devs,dev_index,interface_number,&dev_handle);	
 	if(ret < 0)
@@ -80,6 +75,12 @@ void debugit(void ** devs,int dev_index)
 	ret= claim_interface(dev_handle,interface_number);
 	cout<<"claim_interface=="<<ret<<endl;
 	if(ret<0)goto EXIT_debugit;
+	
+	//int *endpoints=nullptr;
+	//count=-1;
+	//ret= get_endpoints(devs,dev_index,interface_number,&endpoints,&count);
+	//int endpoint_number=0;
+	
 	
 	
 	ret= release_interface(dev_handle,interface_number);

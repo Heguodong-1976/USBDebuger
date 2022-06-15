@@ -12,6 +12,6 @@ extern "C" void close_device(void * handle,int interface_number);
 extern "C" int claim_interface(void * handle,int interface_number);
 extern "C" int release_interface(void * handle,int interface_number);
 
-extern "C" int get_interfaces(void ** devs,int index,int ** interfaces,int *count);
+extern "C" int get_interfaces(void ** devs,int index,int ** interface_numbers,int *count);
 
 #endif
