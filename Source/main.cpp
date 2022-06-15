@@ -16,7 +16,7 @@ int main(void)
 		return (int) cnt;
 	}
 
-PRINT_DEVICES:	
+PRINT_DEVICES:		
 	char * buffer=NULL;
 	devices_to_ascii(devs,&buffer);
 	cout<<buffer<<endl;
@@ -38,6 +38,7 @@ PRINT_DEVICES:
 	cout<<"0: Exit"<<endl;
 	while(true)
 	{	
+		cout<<"Please select operation index:";
 		int op=0;
 		cin>>op;
 		if(op==1){debugit(devs,index);goto PRINT_DEVICES;}
@@ -49,15 +50,43 @@ PRINT_DEVICES:
 	uninit(context);
 	return 0;
 }
-void debugit(void ** devs,int index)
+void debugit(void ** devs,int dev_index)
 {
-	void * dev_handle=NULL;
-	auto ret = open_device(devs,index,0,&dev_handle);
+	system("cls");
+	void * dev_handle=nullptr;
+	int *interfaces=nullptr;
+	int count=-1;
+	auto ret= get_interfaces(devs,dev_index,&interfaces,&count);
 	if(ret < 0)
 	{
-		cout<<"\tFailed libusb_open(...)=="<<ret<<endl;
+		cout<<"get_interfaces(...)=="<<ret<<endl;
 		return;
 	}
-	cout<<"44444444444444444444444444"<<endl;
 	
+	int interface_number=0;
+	cout<<"Please select an interface in (";
+	for(int i=0;i<count;++i)cout<<interfaces[i]<<" ";
+	cout<<"):"<<endl;	
+	cin>>interface_number;
+	
+	
+	ret = open_device(devs,dev_index,interface_number,&dev_handle);	
+	if(ret < 0)
+	{
+		cout<<"Failed libusb_open(...)=="<<ret<<endl;
+		return;
+	}
+	
+	ret= claim_interface(dev_handle,interface_number);
+	cout<<"claim_interface=="<<ret<<endl;
+	if(ret<0)goto EXIT_debugit;
+	
+	
+	ret= release_interface(dev_handle,interface_number);
+	cout<<"release_interface=="<<ret<<endl;
+	if(ret<0)goto EXIT_debugit;
+
+EXIT_debugit:	
+	close_device(dev_handle,interface_number);
+	getchar();
 }
