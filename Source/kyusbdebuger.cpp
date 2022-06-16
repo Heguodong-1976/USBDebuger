@@ -43,12 +43,12 @@ extern "C" int open_device(void ** devs,int index,int interface_num,void** dev_h
 	auto ret=libusb_open(((libusb_device **)devs)[index],(libusb_device_handle **)dev_handle);
 	if(ret < 0)return -10000+ret;
 	ret=libusb_kernel_driver_active((libusb_device_handle *)(*dev_handle), interface_num);
-	cout<<"libusb_kernel_driver_active(...)="<<ret<<endl;
+	//cout<<"libusb_kernel_driver_active(...)="<<ret<<endl;
 	//if(ret==0)return 0;	
 	//if(ret<0)return -20000+ret;
 	
 	ret=libusb_detach_kernel_driver((libusb_device_handle *)(*dev_handle), interface_num);
-	cout<<"libusb_detach_kernel_driver(...)="<<ret<<endl;
+	//cout<<"libusb_detach_kernel_driver(...)="<<ret<<endl;
 	//if(ret==0)return 0;
 	
 	//libusb_close((libusb_device_handle *)(*dev_handle));
@@ -133,36 +133,7 @@ extern "C" int get_endpoints(void ** devs,int index,int interface_number,int ** 
 	for(int i=0;i<*count;++i)(* endpoints)[i]=arr[i];
 	return 0;
 }
-//extern "C" int get_endpoint_direction(void ** devs,int index,int interface_number,int endpoint,int *direction)
-//{
-//	libusb_device * dev=(libusb_device *)(devs[index]);
-//	struct libusb_device_descriptor desc;
-//	auto ret = libusb_get_device_descriptor(dev, &desc);
-//	for(auto config_index = 0; config_index < desc.bNumConfigurations; config_index++)
-//	{
-//		libusb_config_descriptor *config=NULL;
-//		auto ret = libusb_get_config_descriptor(dev, config_index, &config);
-//		for(int interface_index=0;interface_index<config->bNumInterfaces;++interface_index)
-//		{
-//			auto interface=config->interface[interface_index];
-//			for(int altsetting_index=0;altsetting_index<interface.num_altsetting;++altsetting_index)
-//			{
-//				auto interface_descriptor=interface.altsetting[altsetting_index];
-//				if(interface_number!=interface_descriptor.bInterfaceNumber)continue;
-//				for(int endpoint_index=0;endpoint_index<interface_descriptor.bNumEndpoints;++endpoint_index)
-//				{
-//					auto endpoint_descriptor=interface_descriptor.endpoint[endpoint_index];
-//					int number=0b1111&endpoint_descriptor.bEndpointAddress;
-//					if(number!=endpoint)continue;
-//					*direction=0B10000000&endpoint_descriptor.bEndpointAddress;					
-//				}
-//				break;
-//			}
-//		}		
-//		libusb_free_config_descriptor(config);
-//	}
-//	return 0;
-//}
+
 extern "C" int get_endpoint_type(void ** devs,int index,int interface_number,int endpoint,int *type)
 {
 	libusb_device * dev=(libusb_device *)(devs[index]);
@@ -202,7 +173,5 @@ extern "C" int get_endpoint_type(void ** devs,int index,int interface_number,int
 }
 extern "C" int interrupt_transfer (void * handle, unsigned char endpoint, unsigned char *data, int length, int *transferred, unsigned int timeout)
 {
-	auto ret= libusb_interrupt_transfer((libusb_device_handle *)handle,endpoint,data,length,transferred,timeout);
-	cout<<"libusb_interrupt_transfer()===="<<ret<<endl;
-	return ret;
+	return libusb_interrupt_transfer((libusb_device_handle *)handle,endpoint,data,length,transferred,timeout);
 }

@@ -14,7 +14,6 @@ extern "C" int release_interface(void * handle,int interface_number);
 
 extern "C" int get_interfaces(void ** devs,int index,int ** interface_numbers,int *count);
 extern "C" int get_endpoints(void ** devs,int index,int interface_number,int ** endpoints,int *count);
-//extern "C" int get_endpoint_direction(void ** devs,int index,int interface_number,int endpoint,int *direction);
 
 extern "C" int get_endpoint_direction(void ** devs,int index,int interface_number,int endpoint,int *direction);
 extern "C" int get_endpoint_type(void ** devs,int index,int interface_number,int endpoint,int *type);
