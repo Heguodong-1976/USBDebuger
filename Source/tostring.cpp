@@ -58,12 +58,18 @@ string libusb_class_code_to_string(int deviceclass)
 	if(deviceclass==0xff)return "VENDOR_SPEC";
 	return "Unknown";
 }
+string direction_to_string(int dir)
+{
+	if(dir==0X80)return "IN";
+	if(dir==0X00)return "OUT";
+	return "Unknown";
+}
 string endpointAddress_to_string(int bEndpointAddress)
 {
 	int number=0b1111&bEndpointAddress;
 	int dir=0B10000000&bEndpointAddress;
 	char t[100];
-	sprintf(t,"Number=%d Direction=%s",number,dir==0?"Out":"IN");
+	sprintf(t,"Number=%d Direction=%s",number,direction_to_string(dir).c_str());
 	return t;
 }
 string transfer_type_to_string(int type)
