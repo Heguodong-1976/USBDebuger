@@ -129,12 +129,12 @@ EXIT_debugit:
 	close_device(dev_handle,interface_number);
 	getchar();
 }
-void debug_Syn_interrupt_transfer(void * handle,int endpoint)
+void interrupt_transfer(void * handle,int endpoint)
 {
 	while(true)
 	{
 		cout<<"################Operations################"<<endl;
-		cout<<"\t1: run 10 times"<<endl;
+		cout<<"\t1: transfer 100 times"<<endl;
 		cout<<"\t0: Exit"<<endl;		
 		int op_index=0;
 		cout<<"Please input operation:";
@@ -142,13 +142,13 @@ void debug_Syn_interrupt_transfer(void * handle,int endpoint)
 		if(op_index==0)return;
 		if(op_index==1)
 		{	
-			for(int i=0;i<10;++i)
+			for(int i=0;i<100;++i)
 			{
 				cout<<"Time "<<i+1<<":";
 				unsigned char data[1024]={0};
 				int length=4;
 				int transferred;
-				unsigned int timeout=1000;
+				unsigned int timeout=0;//timeout (in milliseconds),unlimited timeout, use value 0
 				auto ret=interrupt_transfer(handle, (unsigned char)endpoint, data, length, &transferred, timeout);				
 				if(ret<0)cout<<"Failed:interrupt_transfer(......)"<<ret;
 				else
@@ -164,22 +164,22 @@ void debug_Syn_interrupt_transfer(void * handle,int endpoint)
 }
 void debug_in(int type,void * handle,int endpoint)
 {
-	cout<<"################Operations################"<<endl;
-	cout<<"\t1: Synchronous read"<<endl;
-	cout<<"\t2: Asynchronous read"<<endl;
-	cout<<"\t0: Exit"<<endl;
-	
-	int op_index=0;
-	cout<<"Please input operation:";
-	cin>>op_index;
-	if(op_index==0)return;
-	//if(type==0X00)return "CONTROL";
-	//if(type==0X01)return "ISOCHRONOUS";
-	//if(type==0X02)return "BULK";
-	//if(type==0X03)return "INTERRUPT";
-	if(op_index==1&&type==0X03)debug_Syn_interrupt_transfer(handle,endpoint);
-	if(op_index==2)
-	{}
+	while(true)
+	{
+		cout<<"################Operations################"<<endl;
+		cout<<"\t1: Synchronous transfer"<<endl;
+		cout<<"\t0: Exit"<<endl;
+		
+		int op_index=0;
+		cout<<"Please input operation:";
+		cin>>op_index;
+		if(op_index==0)return;
+		//if(op_index==1&&type==0X00)control_transfer(handle,endpoint);
+		//if(op_index==1&&type==0X01)isochromous_transfer(handle,endpoint);
+		//if(op_index==1&&type==0X02)bulk_transfer(handle,endpoint);
+		if(op_index==1&&type==0X03)interrupt_transfer(handle,endpoint);
+	}
+
 }
 void debug_out(int type,void * handle,int endpoint)
 {}
