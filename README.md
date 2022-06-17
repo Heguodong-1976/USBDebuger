@@ -1,3 +1,3 @@
-#MSVC X64:make -f MakeFile MSVC
-#MINGW X64:make -f MakeFile MINGW
-#CLEAN：make -f MakeFile CLEAN
+#MSVC X64:<br>
+##BUILD:make -f msvc-x64<br>
+##CLEAN:make -f msvc-x64 CLEAN<br>
