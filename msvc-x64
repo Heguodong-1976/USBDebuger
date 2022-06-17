@@ -1,0 +1,24 @@
+CC=cl.exe
+LINK=link.exe
+LIB_DIR=MSVC\X64\dll
+
+main:Out/main.obj Out/tostring.obj Out/kyusbdebuger.obj
+	copy /Y ${LIB_DIR}\*.dll Out
+	$(LINK) /LIBPATH:${LIB_DIR} /OUT:Out/main.exe Out/main.obj Out/tostring.obj Out/kyusbdebuger.obj libusb-1.0.lib
+	@echo Success!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	
+Out/main.obj:Source/main.cpp  Source/struct.h
+	$(CC) -c /std:c++17 /Zc:__cplusplus /EHsc /Fo:out/main.obj  Source/main.cpp	 
+
+Out/tostring.obj:Source/tostring.h Source/tostring.cpp
+	$(CC) -c /std:c++17 /Zc:__cplusplus /EHsc /Fo:out/tostring.obj  Source/tostring.cpp	 	
+
+Out/kyusbdebuger.obj:Source/kyusbdebuger.h Source/kyusbdebuger.cpp
+	$(CC) -c /std:c++17 /Zc:__cplusplus /EHsc /Fo:out/kyusbdebuger.obj  Source/kyusbdebuger.cpp
+	
+CLEAN:
+	del Out\kyusbdebuger.obj
+	del Out\tostring.obj
+	del Out\main.obj
+	del Out\main.exe
+	del Out\*.dll
