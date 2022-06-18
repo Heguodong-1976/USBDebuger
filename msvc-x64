@@ -4,28 +4,28 @@ LIBexe=lib.exe
 LIB_DIR=MSVC\X64\dll
 OUT_DIR=Out\WIN-X64
 
-main:${OUT_DIR}/main.obj ${OUT_DIR}/tostring.obj ${OUT_DIR}/kyusbdebuger.lib ${OUT_DIR}/Readme.txt
+main: ${OUT_DIR}/kyusbdebuger.lib ${OUT_DIR}/main.obj
 	copy /Y ${LIB_DIR}\*.dll ${OUT_DIR}
 	$(LINKexe) /LIBPATH:${LIB_DIR} /OUT:${OUT_DIR}/main.exe ${OUT_DIR}/main.obj ${OUT_DIR}/kyusbdebuger.lib libusb-1.0.lib
 	@echo Success!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
-${OUT_DIR}/main.obj:Source/main.cpp Source/struct.h ${OUT_DIR}/Readme.txt
+${OUT_DIR}/main.obj:Source/main.cpp Source/struct.h
 	$(CCexe) -c /std:c++17 /Zc:__cplusplus /EHsc /Fo:${OUT_DIR}/main.obj  Source/main.cpp	 
 
-${OUT_DIR}/kyusbdebuger.lib:${OUT_DIR}/tostring.obj ${OUT_DIR}/kyusbdebuger.obj ${OUT_DIR}/Readme.txt
+${OUT_DIR}/kyusbdebuger.lib:${OUT_DIR}/tostring.obj ${OUT_DIR}/kyusbdebuger.obj
 	$(LIBexe) ${OUT_DIR}/tostring.obj ${OUT_DIR}/kyusbdebuger.obj /OUT:${OUT_DIR}/kyusbdebuger.lib
 	copy /Y Source\kyusbdebuger.h ${OUT_DIR}
 
-${OUT_DIR}/tostring.obj:Source/tostring.h Source/tostring.cpp ${OUT_DIR}/Readme.txt
+${OUT_DIR}/tostring.obj:Source/tostring.h Source/tostring.cpp ${OUT_DIR}/libusb-1.0.lib
 	$(CCexe) -c /std:c++17 /Zc:__cplusplus /EHsc /Fo:${OUT_DIR}/tostring.obj  Source/tostring.cpp	 	
 
-${OUT_DIR}/kyusbdebuger.obj:Source/kyusbdebuger.h Source/kyusbdebuger.cpp ${OUT_DIR}/Readme.txt
+${OUT_DIR}/kyusbdebuger.obj:Source/kyusbdebuger.h Source/kyusbdebuger.cpp ${OUT_DIR}/libusb-1.0.lib
 	$(CCexe) -c /std:c++17 /Zc:__cplusplus /EHsc /Fo:${OUT_DIR}/kyusbdebuger.obj  Source/kyusbdebuger.cpp
 
-${OUT_DIR}/Readme.txt:
+${OUT_DIR}/libusb-1.0.lib:
 	if not exist Out (MD Out)
 	if not exist ${OUT_DIR} (MD ${OUT_DIR})
-	@echo ..... >${OUT_DIR}/Readme.txt
+	copy /Y ${LIB_DIR}\*.dll ${OUT_DIR}
 	
 CLEAN:
 	del /q ${OUT_DIR}\.
