@@ -1,8 +1,7 @@
 #include "Include/CLI/CLI.hpp"
+#include "kyusbdebuger.h"
 #include <iostream>
 using namespace std;
-void view_devices();
-void view_device(int venderid,int  productid);
 int main(int argc, char **argv) {
     CLI::App app{"Kiyun USBDebuger......"};
     app.footer(".........................................................."); 
@@ -26,11 +25,11 @@ int main(int argc, char **argv) {
 
     CLI11_PARSE(app, argc, argv);
 
-	if (sub1_1->parsed())
+	if (sub1_1->parsed())//ud view devices
     {
         view_devices();
     }
-	if(sub1_2->parsed())
+	if(sub1_2->parsed())//ud view device  -v 111 -p 222
 	{
 		view_device(venderid, productid);
 	}
@@ -38,12 +37,5 @@ int main(int argc, char **argv) {
     //std::cout << "Parameter value: " << p << std::endl;
     return 0;
 }
-void view_devices()
-{
-	cout<<"view_devices"<<endl;	
-}
+
 //main2 view device  -v 111 -p 222
-void view_device(int venderid,int  productid)
-{
-	cout<<"view_device "<<venderid<<" "<<productid<<endl;	
-}

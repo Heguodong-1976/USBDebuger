@@ -54,6 +54,13 @@ extern "C" int open_device(void ** devs,int index,int interface_num,void** dev_h
 	//libusb_close((libusb_device_handle *)(*dev_handle));
 	return 0;
 }
+extern "C" void* open_device_with_vid_pid(void *context,int vendor_id,int product_id)
+{
+	auto ret= libusb_open_device_with_vid_pid((libusb_context *)context,(uint16_t)vendor_id,(uint16_t)product_id);
+	if(ret==NULL)return nullptr;
+	libusb_set_auto_detach_kernel_driver((libusb_device_handle *)ret, TRUE);
+	return ret;
+}
 extern "C" void close_device(void * handle,int interface_number)
 {
 	libusb_attach_kernel_driver((libusb_device_handle *)handle, interface_number);
