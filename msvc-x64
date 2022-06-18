@@ -6,7 +6,7 @@ OUT_DIR=Out\WIN-X64
 
 main: ${OUT_DIR}/kyusbdebuger.lib ${OUT_DIR}/main.obj
 	copy /Y ${LIB_DIR}\*.dll ${OUT_DIR}
-	$(LINKexe) /LIBPATH:${LIB_DIR} /OUT:${OUT_DIR}/main.exe ${OUT_DIR}/main.obj ${OUT_DIR}/kyusbdebuger.lib libusb-1.0.lib
+	$(LINKexe) /OUT:${OUT_DIR}/main.exe ${OUT_DIR}/main.obj ${OUT_DIR}/kyusbdebuger.lib
 	@echo Success!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
 ${OUT_DIR}/main.obj:Source/main.cpp Source/struct.h
