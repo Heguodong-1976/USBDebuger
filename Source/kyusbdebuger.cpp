@@ -3,67 +3,57 @@
 #include "Include/libusb.h"
 #include "tostring.h"
 #include <vector>
+#include <map>
 using namespace std;
+map<libusb_context*,libusb_device**> context_dic;
 extern "C" int init(void **context)
 {
-	return libusb_init((libusb_context **)context);
+	auto ret=libusb_init((libusb_context **)context);
+	if(ret!=LIBUSB_SUCCESS)return 10000+ret;
+	libusb_device ** devices=nullptr;
+	ret=libusb_get_device_list((libusb_context *)(*context), &devices);
+	if(ret<0)return 20000+ret;
+	context_dic[(libusb_context *)(*context)]=devices;
+	
+	return 0;
 }
 extern "C" void uninit(void *context)
-{
+{	
+	auto devices=context_dic[(libusb_context*)context];
+	libusb_free_device_list(devices,0);
+	auto itor=context_dic.find((libusb_context*)context);
+	context_dic.erase(itor);	
 	libusb_exit((libusb_context *)context);
 }
-extern "C" int get_devices(void *context,void *** devices)
-{
-	return libusb_get_device_list((libusb_context *)context, (libusb_device ***)devices);	
-}
-extern "C" void free_devices(void ** devices)
-{
-	libusb_free_device_list((libusb_device **)devices,0);
-}
-extern "C" void devices_to_ascii(void **devices,char** buffer)
+extern "C" void devices_to_ascii(void *context,char** buffer)
 {
 	ostringstream ss;
+	auto devices=context_dic[(libusb_context*)context];
 	print_devs((libusb_device **)devices,ss);
 	string str=ss.str();
 	int len=str.size();
 	*buffer=new char[len+1];
 	strcpy(*buffer,str.c_str());
 }
-extern "C" void device_to_ascii(void ** devices,int index,char** buffer)
+extern "C" void device_to_ascii(void * device,char** buffer)
 {
 	ostringstream ss;
-	print_dev((libusb_device **)devices,index,ss);
+	print_dev((libusb_device *)device,ss);
 	string str=ss.str();
 	int len=str.size();
 	*buffer=new char[len+1];
 	strcpy(*buffer,str.c_str());
 }
-extern "C" int open_device(void ** devs,int index,int interface_num,void** dev_handle)
-{
-	auto ret=libusb_open(((libusb_device **)devs)[index],(libusb_device_handle **)dev_handle);
-	if(ret < 0)return -10000+ret;
-	ret=libusb_kernel_driver_active((libusb_device_handle *)(*dev_handle), interface_num);
-	//cout<<"libusb_kernel_driver_active(...)="<<ret<<endl;
-	//if(ret==0)return 0;	
-	//if(ret<0)return -20000+ret;
-	
-	ret=libusb_detach_kernel_driver((libusb_device_handle *)(*dev_handle), interface_num);
-	//cout<<"libusb_detach_kernel_driver(...)="<<ret<<endl;
-	//if(ret==0)return 0;
-	
-	//libusb_close((libusb_device_handle *)(*dev_handle));
-	return 0;
-}
-extern "C" void* open_device_with_vid_pid(void *context,int vendor_id,int product_id)
+
+extern "C" void* open_device(void *context,int vendor_id,int product_id)
 {
 	auto ret= libusb_open_device_with_vid_pid((libusb_context *)context,(uint16_t)vendor_id,(uint16_t)product_id);
 	if(ret==NULL)return nullptr;
 	libusb_set_auto_detach_kernel_driver((libusb_device_handle *)ret, TRUE);
 	return ret;
 }
-extern "C" void close_device(void * handle,int interface_number)
-{
-	libusb_attach_kernel_driver((libusb_device_handle *)handle, interface_number);
+extern "C" void close_device(void * handle)
+{	
 	libusb_close((libusb_device_handle *)handle);
 }
 extern "C" int claim_interface(void * handle,int interface_number)
@@ -74,11 +64,26 @@ extern "C" int release_interface(void * handle,int interface_number)
 {
 	return libusb_release_interface((libusb_device_handle *)handle, interface_number);
 }
-
-extern "C" int get_interfaces(void ** devs,int index,int ** interface_numbers,int *count)
+extern "C" void* find_device(void *context,int venderid,int productid)
+{
+	auto devices=context_dic[(libusb_context*)context];
+	for(int i=0;;++i)
+	{
+		auto device=devices[i];
+		if(device==nullptr)break;
+		libusb_device_descriptor desc;
+		auto ret = libusb_get_device_descriptor(device, &desc);
+		if(venderid!=desc.idVendor)continue;
+		if(productid!=desc.idProduct)continue;
+		return device;		
+	}
+	return nullptr;	
+}
+extern "C" int get_interfaces(void *context,int venderid,int productid,int ** interface_numbers,int *count)
 {	
-	libusb_device * dev=(libusb_device *)(devs[index]);
-	struct libusb_device_descriptor desc;
+	libusb_device * dev=(libusb_device *)find_device(context,venderid,productid);
+	if(dev==nullptr)return -10000;
+	libusb_device_descriptor desc;
 	auto ret = libusb_get_device_descriptor(dev, &desc);
 	vector<int> arr;
 	for(auto config_index = 0; config_index < desc.bNumConfigurations; config_index++)
@@ -101,9 +106,10 @@ extern "C" int get_interfaces(void ** devs,int index,int ** interface_numbers,in
 	for(int i=0;i<*count;++i)(* interface_numbers)[i]=arr[i];
 	return 0;
 }
-extern "C" int get_endpoints(void ** devs,int index,int interface_number,int ** endpoints,int *count)
+extern "C" int get_endpoints(void *context,int venderid,int productid,int interface_number,int ** endpoints,int *count)
 {
-	libusb_device * dev=(libusb_device *)(devs[index]);
+	libusb_device * dev=(libusb_device *)find_device(context,venderid,productid);
+	if(dev==nullptr)return -10000;
 	struct libusb_device_descriptor desc;
 	auto ret = libusb_get_device_descriptor(dev, &desc);
 	vector<int> arr;
@@ -141,9 +147,10 @@ extern "C" int get_endpoints(void ** devs,int index,int interface_number,int ** 
 	return 0;
 }
 
-extern "C" int get_endpoint_type(void ** devs,int index,int interface_number,int endpoint,int *type)
+extern "C" int get_endpoint_type(void *context,int venderid,int productid,int interface_number,int endpoint,int *type)
 {
-	libusb_device * dev=(libusb_device *)(devs[index]);
+	libusb_device * dev=(libusb_device *)find_device(context,venderid,productid);
+	if(dev==nullptr)return -10000;
 	struct libusb_device_descriptor desc;
 	auto ret = libusb_get_device_descriptor(dev, &desc);
 	for(auto config_index = 0; config_index < desc.bNumConfigurations; config_index++)
@@ -169,14 +176,16 @@ extern "C" int get_endpoint_type(void ** devs,int index,int interface_number,int
 					//cout<<"\t\t\t\tInterval:\t"<<(int)endpoint_descriptor.bInterval<<endl;
 					//cout<<"\t\t\t\tRefresh:\t"<<(int)endpoint_descriptor.bRefresh<<endl;
 					//cout<<"\t\t\t\tSynchAddress:\t"<<(int)endpoint_descriptor.bSynchAddress<<endl;
-					*type=endpoint_descriptor.bmAttributes&0B11;					
+					*type=endpoint_descriptor.bmAttributes&0B11;
+					libusb_free_config_descriptor(config);
+					return 0;
 				}
 				break;
 			}
 		}		
 		libusb_free_config_descriptor(config);
 	}
-	return 0;	
+	return -10001;	
 }
 extern "C" int interrupt_transfer (void * handle, unsigned char endpoint, unsigned char *data, int length, int *transferred, unsigned int timeout)
 {

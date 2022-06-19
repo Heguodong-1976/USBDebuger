@@ -25,17 +25,18 @@ int main(int argc, char **argv) {
 
     CLI11_PARSE(app, argc, argv);
 
-	if (sub1_1->parsed())//ud view devices
+	if (sub1_1->parsed())//out\WIN-X64\ud.exe view devices
     {
         view_devices();
     }
-	if(sub1_2->parsed())//ud view device  -v 111 -p 222
+	if(sub1_2->parsed())//out\WIN-X64\ud.exe view device -v 0x2717 -p 0x5013
 	{
 		view_device(venderid, productid);
 	}
-
+	if(sub2->parsed())//out\WIN-X64\ud.exe debug -v 0x2717 -p 0x5013 -i 0 -e 130
+	{
+		debug_device(venderid, productid,interface_num,endpoint_num);
+	}
     //std::cout << "Parameter value: " << p << std::endl;
     return 0;
 }
-
-//main2 view device  -v 111 -p 222

@@ -69,7 +69,7 @@ string endpointAddress_to_string(int bEndpointAddress)
 	int number=0b1111&bEndpointAddress;
 	int dir=0B10000000&bEndpointAddress;
 	char t[100];
-	sprintf(t,"Number=%d Direction=%s",number,direction_to_string(dir).c_str());
+	sprintf(t,"%d(Number=%d Direction=%s)",bEndpointAddress,number,direction_to_string(dir).c_str());
 	return t;
 }
 string transfer_type_to_string(int type)
@@ -193,9 +193,8 @@ static void print_dev_inf(libusb_device * dev,ostream& s)
 	s<<"Serial Number:\t"<<serialNumber<<endl;
 	libusb_close(dev_handle);
 }
-void print_dev(libusb_device ** devs,int index, ostream& s)//(libusb_device * dev,ostream& s)
+void print_dev(libusb_device * dev,ostream& s)//(libusb_device * dev,ostream& s)
 {	
-	libusb_device * dev=devs[index];
 	struct libusb_device_descriptor desc;
 	auto ret = libusb_get_device_descriptor(dev, &desc);
 	if(ret<0)
@@ -218,6 +217,7 @@ void print_dev(libusb_device ** devs,int index, ostream& s)//(libusb_device * de
 	s<<"Count of Configurations:"<<(int)desc.bNumConfigurations<<endl;
 	for(auto i = 0; i < desc.bNumConfigurations; i++) print_configuration(dev,i,s);
 }
+
 void print_devs(libusb_device **devs,ostream& s)
 {	
 	for(int i = 0;;++i)

@@ -13,5 +13,5 @@ string transfer_type_to_string(int type);
 string iso_sync_type_to_string(int type);
 string iso_usage_type_to_string(int type);
 void print_devs(libusb_device **devs,ostream& s);
-void print_dev(libusb_device ** dev,int index, ostream& s);
+void print_dev(libusb_device * dev,ostream& s);
 #endif
