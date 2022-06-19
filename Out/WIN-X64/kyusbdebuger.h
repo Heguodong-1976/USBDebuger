@@ -10,8 +10,8 @@ extern "C" int get_interfaces(void *context,int venderid,int productid,int ** in
 extern "C" int get_endpoints(void *context,int venderid,int productid,int interface_number,int ** endpoints,int *count);
 extern "C" int get_endpoint_type(void *context,int venderid,int productid,int interface_number,int endpoint,int *type);
 
-extern "C" void* open_device_with_vid_pid(void *context,int vendor_id,int product_id);
-extern "C" void close_device(void * handle,int interface_number);
+extern "C" void* open_device(void *context,int venderid,int productid);
+extern "C" void close_device(void * handle);
 
 extern "C" int claim_interface(void * handle,int interface_number);
 extern "C" int release_interface(void * handle,int interface_number);

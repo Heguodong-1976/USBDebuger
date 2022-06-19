@@ -7,6 +7,8 @@ TARGET_DIR=Out\WIN-X64
 main: ${TARGET_DIR}/kyusbdebuger.lib ${TARGET_DIR}/main.obj
 	$(LINKexe) /OUT:${TARGET_DIR}/ud.exe ${TARGET_DIR}/main.obj ${TARGET_DIR}/kyusbdebuger.lib
 	@echo Success!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	del ${TARGET_DIR}\*.obj
+	del ${TARGET_DIR}\libusb-1.0.lib
 	
 ${TARGET_DIR}/main.obj:Source/main.cpp Source/struct.h
 	$(CCexe) -c /std:c++17 /Zc:__cplusplus /EHsc /Fo:${TARGET_DIR}/main.obj  Source/main.cpp	 
@@ -28,6 +30,7 @@ ${TARGET_DIR}/libusb-1.0.lib:
 	if not exist ${TARGET_DIR} (MD ${TARGET_DIR})
 	copy /Y ${LIB_DIR}\libusb-1.0.lib ${TARGET_DIR}
 	copy /Y Source\kyusbdebuger.h ${TARGET_DIR}
+	copy /Y MSVC\zadig.exe ${TARGET_DIR}
 	
 CLEAN:
 	del /q ${TARGET_DIR}\.

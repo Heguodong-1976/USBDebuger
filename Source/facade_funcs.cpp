@@ -51,6 +51,13 @@ extern "C" void debug_device(int venderid, int productid,int interface_num,int e
 		uninit(context);
 		return ;
 	}
+	ret= claim_interface(dev_handle,interface_num);	
+	if(ret<0)
+	{
+		cout<<"Failed : claim_interface(...)=="<<ret<<endl;
+		goto EXIT_debug_device;
+	}
+	
 	int direction=0B10000000&endpoint_num;
 	int type=-1;
 	ret=get_endpoint_type(context,venderid,productid,interface_num,endpoint_num,&type);
